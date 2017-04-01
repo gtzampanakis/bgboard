@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+	<head>
+		<link rel=stylesheet href=/css/bgboard.css>
+		<script src=/js/bgboard.js></script>
+		<meta charset=utf-8></meta>
+	</head>
+	<body>
+		Here is the board &quot; &amp;quot;:
+		<div id=board1></div>
+	</body>
+	<script>
+		var bgBoard1 = new BgBoard({
+			/* Base URL of the bgboard installation. */
+			filesRoot : '/',
+			/* CSS selector for the containing div element. */
+			containerSelector : '#board1',
+			/* Scale the board size, for example 0.5 is half size. */
+			scale : 0.8,
+			/* Position to draw, format is p:m,
+			 * where p is the GNU Backgammon Position ID
+			 * and m is the GNU Backgammon Match ID.
+			*/
+			gnuid :	'AMAAmLkFSEgBAA:UQmyAAAAAAAE'
+		});
+		/* Remember to call drawBoard() in order to actually draw the board. */
+		bgBoard1.drawBoard();
+	</script>
+</html>
