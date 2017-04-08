@@ -19,8 +19,11 @@ function inner(gnuid, assert) {
 
 	bgboard.drawBoard();
 
-	assert.ok(document.querySelector('#qunit-fixture > img.bgboard_empty_board'));
-	assert.ok(document.querySelector('#qunit-fixture > img.bgboard_checker'));
+	var c = document.querySelector('#qunit-fixture');
+
+	assert.ok(c.querySelector('img.bgboard_empty_board'));
+	assert.ok(c.querySelector('img.bgboard_checker'));
+	assert.ok(c.querySelector('.gnubg_position_info img'));
 }
 
 QUnit.test('gnuid 1', function(a) {inner('AwAAGAAAAAAAAA:ARmgACAAEAAE', a)})

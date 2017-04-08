@@ -5,9 +5,9 @@ Javascript Backgammon Board
 Inserts a simple and clear backgammon board using plain Javascript
 (no dependencies).
 
-![bgoard - example checker play position](http://i.imgur.com/P50Kr7I.png)
+![bgboard - example checker play position](http://i.imgur.com/GpQU9hE.png)
 
-![bgoard - example cube decision position](http://i.imgur.com/4zW2Eaj.png)
+---
 
 ### Features
 
@@ -52,15 +52,13 @@ Here is a minimal example:
 			*/
 			gnuid :	'AMAAmLkFSEgBAA:UQmyAAAAAAAE'
 		});
-		/* Remember to call drawBoard() in order to actually draw the board. */
-		bgBoard1.drawBoard();
 	</script>
 </html>
 ```
 
 ### Installation
 
-Make the directories `img` and `js` accessible on your website. For example `http://www.example.com/static/bgboard/img` and `http://www.example.com/static/bgboard/js`. That's it! Now you can use `http://www.example.com/static/bgboard` in the `filesRoot` option to the `BgBoard` constructor.
+Make the directories `img`, `js` and `css` accessible on your website. For example `http://www.example.com/static/bgboard/img`. That's it! Now you can use `http://www.example.com/static/bgboard` in the `filesRoot` option to the `BgBoard` constructor.
 
 ### Tests
 

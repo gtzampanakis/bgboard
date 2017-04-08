@@ -142,6 +142,7 @@ function BgBoard(options) {
 	this.container.appendChild(boardImage);
 
 	this.setDataFromGnuid(options.gnuid);
+	this.drawBoard();
 
 }
 
@@ -247,7 +248,7 @@ BgBoard.prototype.setDataFromGnuid = function(gnuid) {
     }
 	this.arrBar[1] = h;
     if (e < 0) {
-        return false
+        return false;
     }
     this.intCubeVal = Math.pow(
 			2, parseInt(bin2Dec(rev(matchIdDecoded.substring(0, 4))), 10));
@@ -388,8 +389,8 @@ BgBoard.prototype.drawBoard = function () {
 			for (checkeri = 0; checkeri < numOfCheckers; checkeri++) {
 				var img = new Image();
 				var playeri = this.arrPoints[pointi] > 0
-								? BgBoard.RED_PLAYER   
-								: BgBoard.WHITE_PLAYER;
+								? BgBoard.PLAYER0
+								: BgBoard.PLAYER1;
 				var vertOffset = 
 					this.pointiCheckeriToVerticalOffset(pointi, checkeri);
 				img.src = this.options.filesRoot 
@@ -417,7 +418,7 @@ BgBoard.prototype.drawBoard = function () {
 			img.width = this.CHECK_SIDE_LENGTH + '';
 			img.height = this.CHECK_SIDE_LENGTH + '';
 			var vertOffset = this.pointiCheckeriToVerticalOffset(
-					playeri == BgBoard.RED_PLAYER ? 0 : 23,
+					playeri == BgBoard.PLAYER0 ? 0 : 23,
 					checkeri
 			);
 			img.style.position = 'absolute';
@@ -440,7 +441,7 @@ BgBoard.prototype.drawBoard = function () {
 			img.width = this.CHECK_SIDE_LENGTH + '';
 			img.height = this.CHECK_SIDE_LENGTH + '';
 			var vertOffset = this.pointiCheckeriToVerticalOffset(
-					playeri == BgBoard.RED_PLAYER ? 0 : 23,
+					playeri == BgBoard.PLAYER0 ? 0 : 23,
 					checkeri
 			);
 			img.style.position = 'absolute';
@@ -547,6 +548,79 @@ BgBoard.prototype.drawBoard = function () {
 	for (var i = 0; i < toAppend.length; i++) {
 		this.container.appendChild(toAppend[i]);
 	}
+
+	this.container.innerHTML += (
+				'<div class="gnubg_position_info">' +
+				'<table>' +
+				'<tr>' +
+				'</tr>' +
+				'<tr>' +
+				'</tr>' +
+				'</table>' +
+				'</div>'
+	);
+
+	var infoTable = this.container.querySelector(
+					'.gnubg_position_info > table');
+
+	var trs = infoTable.querySelectorAll('tr');
+
+	for (var i = 0; i < trs.length; i++) {
+
+		var tr = trs[i];
+
+		var td1 = document.createElement('td');
+		if (i == 0) {
+			td1.textContent = 'Match length: ' + this.intMatchLgh;
+		}
+		else if (i == 1) {
+			if (this.isCrawford) {
+				td1.textContent = 'Crawford game';
+				td1.style['font-weight'] = 'bolder';
+			}
+		}
+		tr.appendChild(td1);
+
+		var td2 = document.createElement('td');
+		var checkerImg = document.createElement('img');
+		checkerImg.src = this.options.filesRoot
+							+ 'img' + BgBoard.CHECKER_IMAGE_URLS[i];
+		td2.appendChild(checkerImg);
+		tr.appendChild(td2);
+
+		var td3 = document.createElement('td');
+		if (i == 0) {
+			var away = this.intMatchLgh - this.intScoreW;
+			td3.textContent = this.intScoreW + ' pts (' + away + '-away)';
+		}
+		else if (i == 1) {
+			var away = this.intMatchLgh - this.intScoreB;
+			td3.textContent = this.intScoreB + ' pts (' + away + '-away)';
+		}
+		tr.appendChild(td3);
+
+		var pips0 = this.pipCount0();
+		var pips1 = this.pipCount1();
+		var pipsDiff = pips0 - pips1;
+
+		var td4 = document.createElement('td');
+		if (i == 0) {
+			var sign = pipsDiff >= 0 ? '+' : '-';
+			td4.textContent = (
+				'pips: ' + pips0 + ' (' + sign + ' ' 
+								+ Math.abs(pipsDiff) + ')'
+			);
+		}
+		else if (i == 1) {
+			var sign = pipsDiff < 0 ? '+' : '-';
+			td4.textContent = (
+				'pips: ' + pips1 + ' (' + sign + ' ' 
+								+ Math.abs(pipsDiff) + ')'
+			);
+		}
+		tr.appendChild(td4);
+	}
+
 }
 
 BgBoard.prototype.pointiToLeftOffset = function(pointi) {
@@ -567,6 +641,28 @@ BgBoard.prototype.pointiToLeftOffset = function(pointi) {
 	return leftOffsetInWidths * this.CHECK_SIDE_LENGTH;
 }
 
+BgBoard.prototype.pipCount0 = function() {
+    var a = 0;
+    for (i = 0; i < 24; i++) {
+        if (this.arrPoints[i] > 0) {
+            a += (i + 1) * this.arrPoints[i]
+        }
+    }
+    a += 25 * this.arrBar[0];
+    return a
+}
+
+BgBoard.prototype.pipCount1 = function() {
+    var a = 0;
+    for (i = 0; i < 24; i++) {
+        if (this.arrPoints[i] < 0) {
+            a += (24 - i) * Math.abs(this.arrPoints[i])
+        }
+    }
+    a += 25 * this.arrBar[1];
+    return a
+}
+
 BgBoard.DICE_OUTCOMES = [
 	'1-1', '2-1', '2-2', '3-1', '3-2', '3-3',
 	'4-1', '4-2', '4-3', '4-4', '5-1', '5-2',
@@ -574,8 +670,8 @@ BgBoard.DICE_OUTCOMES = [
 	'6-4', '6-5', '6-6'
 ];
 
-BgBoard.RED_PLAYER = 0;
-BgBoard.WHITE_PLAYER = 1;
+BgBoard.PLAYER0 = 0;
+BgBoard.PLAYER1 = 1;
 
 BgBoard.TOP_PLAYER_HAS_CUBE = 1;
 BgBoard.BOTTOM_PLAYER_HAS_CUBE = 2;

@@ -1,0 +1,21 @@
+.gnubg_position_info table {
+	font-family: "Trebuchet MS", sans-serif;
+	border-spacing: 1px;
+	border-collapse: collapse;
+	background-color: #bcc;
+}
+
+.gnubg_position_info table td {
+	border: 1px solid black;
+	padding: 5px;
+	padding: .2em .5em;
+	white-space: nowrap;
+}
+
+.gnubg_position_info table td img {
+	width: 10pt;
+}
+
+.gnubg_position_info table td, .gnubg_position_info table th {
+	border: 2px solid gray;
+}
