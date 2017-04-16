@@ -53,6 +53,9 @@ function base642bin(f) {
     var e = "";
     var a = "";
     for (var d = 0; d < f.length; d++) {
+        if (b.indexOf(f.charAt(d)) == -1) {
+            return false
+        }
         e += rev(pad(rev(dec2Bin(b.indexOf(f.charAt(d)))), 6))
     }
     e = pad(e, 8);
@@ -95,7 +98,7 @@ function BgBoard(options) {
 
 	this.options = options;
 	this.container = document.querySelector(options.containerSelector);
-	this.container.style.position = 'relative';
+    this.container.className += ' bgboard_container';
 
 	this.CHECK_SIDE_LENGTH 
 		= BgBoard.BASE_CHECK_SIDE_LENGTH * options.scale;
@@ -171,8 +174,12 @@ function BgBoard(options) {
 	boardImage.className = 'bgboard_empty_board';
 	this.container.appendChild(boardImage);
 
-	this.setDataFromGnuid(options.gnuid);
-	this.drawBoard();
+	if (this.setDataFromGnuid(options.gnuid)) {
+        this.drawBoard();
+    }
+    else {
+        this.drawErrorNote();
+    }
 
 }
 
@@ -196,7 +203,6 @@ BgBoard.prototype.initData = function() {
 	 this.booCrawford = false;
 	 this.isCrawford;
 	 this.strReply = "";
-	 this.strMessage = "";
 	 this.intRestOnroll = 0;
 	 this.intRestDice = 0;
 	 this.intRestCpos = 0;
@@ -210,15 +216,34 @@ BgBoard.prototype.initData = function() {
 }
 
 BgBoard.prototype.setDataFromGnuid = function(gnuid) {
+    
+    if (!gnuid) {
+        return false;
+    }
+
+    gnuid = gnuid.trim();
+
 	this.initData();
-    this.strMessage = "Invalid Position or Match ID";
 
-    var strGnuId = gnuid.split(':')[0];
-
+    var strPosId = gnuid.split(':')[0];
     var strMatchId = gnuid.split(':')[1];
 
-    var positionIdDecoded = base642bin(strGnuId);
+    if (strPosId.length != 14) {
+        return false;
+    }
+    if (strMatchId.length != 12) {
+        return false;
+    }
+
+    var posIdDecoded = base642bin(strPosId);
     var matchIdDecoded = base642bin(strMatchId);
+
+    if (!posIdDecoded) {
+        return false;
+    }
+    if (!matchIdDecoded) {
+        return false;
+    }
 
     var p = 0;
     var h = 0;
@@ -226,7 +251,7 @@ BgBoard.prototype.setDataFromGnuid = function(gnuid) {
     var e = 15;
     for (var m = 0; m <= 23; m++) {
         h = 0;
-        while (positionIdDecoded.charAt(p) == "1") {
+        while (posIdDecoded.charAt(p) == "1") {
             if (m < 12) {
                 f = m
             } else {
@@ -242,7 +267,7 @@ BgBoard.prototype.setDataFromGnuid = function(gnuid) {
         }
     }
     h = 0;
-    while (positionIdDecoded.charAt(p) == "1") {
+    while (posIdDecoded.charAt(p) == "1") {
         h++;
         e--;
         p++
@@ -250,12 +275,12 @@ BgBoard.prototype.setDataFromGnuid = function(gnuid) {
     p++;
 	this.arrBar[0] = h;
     if (e < 0) {
-        return false
+        return false;
     }
     e = 15;
     for (m = 23; m >= 0; m--) {
         h = 0;
-        while (positionIdDecoded.charAt(p) == "1") {
+        while (posIdDecoded.charAt(p) == "1") {
             if (m < 12) {
                 f = m
             } else {
@@ -271,7 +296,7 @@ BgBoard.prototype.setDataFromGnuid = function(gnuid) {
         }
     }
     h = 0;
-    while (positionIdDecoded.charAt(p) == "1") {
+    while (posIdDecoded.charAt(p) == "1") {
         h++;
         e--;
         p++
@@ -351,7 +376,6 @@ BgBoard.prototype.setDataFromGnuid = function(gnuid) {
             }
         }
     }
-    this.strMessage = "";
 
 	if (matchIdDecoded.substring(6, 7) == '0') {
 		this.arrPoints.reverse();
@@ -580,7 +604,7 @@ BgBoard.prototype.drawBoard = function () {
 	}
 
 	this.container.innerHTML += (
-				'<div class="gnubg_position_info">' +
+				'<div class="bgboard_position_info">' +
 				'<table>' +
 				'<tr>' +
 				'</tr>' +
@@ -591,7 +615,7 @@ BgBoard.prototype.drawBoard = function () {
 	);
 
 	var infoTable = this.container.querySelector(
-					'.gnubg_position_info > table');
+					'.bgboard_position_info > table');
 
 	var trs = infoTable.querySelectorAll('tr');
 
@@ -651,6 +675,15 @@ BgBoard.prototype.drawBoard = function () {
 		tr.appendChild(td4);
 	}
 
+}
+
+BgBoard.prototype.drawErrorNote = function () {
+    var errorDiv = document.createElement('div');
+    errorDiv.className = 'bgboard_error';
+    var errorText = document.createTextNode(
+        'bgboard: Invalid Position or Match ID');
+    errorDiv.appendChild(errorText);
+    this.container.appendChild(errorDiv);
 }
 
 BgBoard.prototype.pointiToLeftOffset = function(pointi) {
