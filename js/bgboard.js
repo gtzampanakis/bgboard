@@ -622,6 +622,7 @@ BgBoard.prototype.drawBoard = function () {
 	for (var i = 0; i < trs.length; i++) {
 
 		var tr = trs[i];
+		tr.replaceChildren();
 
 		var td1 = document.createElement('td');
 		if (i == 0) {
